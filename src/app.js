@@ -32,8 +32,6 @@ const sequelize = new Sequelize('postgres', 'postgres', process.env.POSTGRES_PAS
         console.error('Unable to connect to the database:', error);
       }
 })();
-console.log("The end");
-exit();
 
 const clientId = process.env.CLIENT_ID;
 
