@@ -21,6 +21,15 @@ jobs:
           submodules: true
       - name: Set environment variables
         run: echo "${{ secrets.DOTENV }}" > .env
+      - name: cleanup previous deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USERE }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker compose down
+            rm -rf /home/ubuntu/code/nerif
       - name: Deploy
         uses: easingthemes/ssh-deploy@main
         with:
@@ -38,3 +47,11 @@ jobs:
             # ARGS: # optional, default is -rltgoDzvO
             # An array of folder to exclude
             # EXCLUDE: # optional, default is
+      - name: cleanup previous deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USERE }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker compose up --build
