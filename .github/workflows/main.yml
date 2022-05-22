@@ -54,4 +54,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           command: |
             cd /home/ubuntu/code/nerif
-            docker-compose up --detach --build
+            docker compose up --detach --build
