@@ -28,7 +28,6 @@ jobs:
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           command: |
-            docker compose down
             rm -rf /home/ubuntu/code/nerif
       - name: Deploy
         uses: easingthemes/ssh-deploy@main
@@ -47,7 +46,7 @@ jobs:
             # ARGS: # optional, default is -rltgoDzvO
             # An array of folder to exclude
             # EXCLUDE: # optional, default is
-      - name: cleanup previous deploy
+      - name: restart docker containers
         uses: fifsky/ssh-action@master
         with:
           host: ${{ secrets.REMOTE_HOST }}
@@ -55,4 +54,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           command: |
             cd /home/ubuntu/code/nerif
-            docker compose up --build
+            docker-compose up --detach --build
