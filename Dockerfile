@@ -1,7 +1,9 @@
 FROM node:lts-alpine3.15
-WORKDIR /app
 RUN apk add git
 RUN apk add subversion
-COPY . .
+WORKDIR /app
+COPY package.json .
+COPY .env .
 RUN npm install
-CMD ["node", "app.js"]
+COPY src src
+CMD ["node", "src/app.js"]

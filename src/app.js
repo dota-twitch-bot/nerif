@@ -1,3 +1,5 @@
+const { exit } = require('process');
+
 require('dotenv').config();
 var steam = require("steam"),
     util = require("util"),
@@ -8,21 +10,36 @@ var steam = require("steam"),
     steamID = require("@node-steam/id"),
     heroNames = require('./heroNames.js'),
     tmi = require('tmi.js'),
+    { Sequelize } = require('sequelize'),
     steamClient = new steam.SteamClient(),
     steamUser = new steam.SteamUser(steamClient),
     steamFriends = new steam.SteamFriends(steamClient),
     Dota2 = new dota2.Dota2Client(steamClient, false);
 
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const sequelize = new Sequelize('postgres', 'postgres', process.env.POSTGRES_PASSWORD, {
+  host: 'db',
+  dialect: 'postgres'
+});
 
-const clientId = 'gp762nuuoqcoxypju8c569th9wz7q5';
 
-// Load config test
-global.config = require("./config");
+// testa!
+(async () => {
+    try {
+        await sequelize.authenticate();
+        console.log('Connection has been established successfully.');
+      } catch (error) {
+        console.error('Unable to connect to the database:', error);
+      }
+})();
+console.log("The end");
+exit();
+
+const clientId = process.env.CLIENT_ID;
 
 // Load in server list if we've saved one before
-if (fs.existsSync('steam_data/servers')) {
-    steam.servers = JSON.parse(fs.readFileSync('steam_data/servers'));
+if (fs.existsSync('servers')) {
+    steam.servers = JSON.parse(fs.readFileSync('servers'));
 }
 
 const generateRP = (txt) => {
@@ -67,7 +84,7 @@ let matchAggregate = new Set();
 let channels = new Map();
 
 channels.set('bizarelli', {
-    accountIDs32: [1026549199],
+    accountIDs32: [1026549199, 917427034],
     currentMatches: new Set(),
     broadcasterID: "172248525",
     token: "yyqq20t0f2q02ebs9mrq0bya816m64",
@@ -274,7 +291,7 @@ var onSteamLogOn = function onSteamLogOn(logonResp) {
 },
     onSteamServers = function onSteamServers(servers) {
         util.log("Received servers.");
-        fs.writeFile('steam_data/servers', JSON.stringify(servers), (err) => {
+        fs.writeFile('servers', JSON.stringify(servers), (err) => {
             if (err) { if (this.debug) util.log("Error writing "); }
             else { if (this.debug) util.log(""); }
         });
@@ -289,7 +306,7 @@ var onSteamLogOn = function onSteamLogOn(logonResp) {
 steamUser.on('updateMachineAuth', function (sentry, callback) {
     console.log('creating sentry file');
     var hashedSentry = crypto.createHash('sha1').update(sentry.bytes).digest();
-    fs.writeFileSync('steam_data/sentry', hashedSentry)
+    fs.writeFileSync('sentry', hashedSentry)
     util.log("sentryfile saved");
     callback({
         sha_file: hashedSentry
@@ -305,7 +322,7 @@ if (process.env.STEAM_GUARD_CODE) logOnDetails.auth_code = process.env.STEAM_GUA
 if (process.env.TWO_FACTOR_CODE) logOnDetails.two_factor_code = process.env.TWO_FACTOR_CODE;
 
 try {
-    var sentry = fs.readFileSync('steam_data/sentry');
+    var sentry = fs.readFileSync('sentry');
     if (sentry.length) logOnDetails.sha_sentryfile = sentry;
 } catch (beef) {
     util.log("Cannot load the sentry. " + beef);
