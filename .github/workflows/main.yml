@@ -21,6 +21,14 @@ jobs:
           submodules: true
       - name: Set environment variables
         run: echo "${{ secrets.DOTENV }}" > .env
+      - name: cleanup previous deploy
+        uses: fifsky/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          user: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command: |
+            rm -rf /home/ubuntu/code/nerif
       - name: Deploy
         uses: easingthemes/ssh-deploy@main
         with:
@@ -38,3 +46,12 @@ jobs:
             # ARGS: # optional, default is -rltgoDzvO
             # An array of folder to exclude
             # EXCLUDE: # optional, default is
+      - name: restart docker containers
+        uses: fifsky/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          user: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command: |
+            cd /home/ubuntu/code/nerif
+            docker compose up --detach --build
