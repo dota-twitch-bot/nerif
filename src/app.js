@@ -33,6 +33,8 @@ const sequelize = new Sequelize('postgres', 'postgres', process.env.POSTGRES_PAS
       }
 })();
 
+console.log("Docker deploy test");
+
 const clientId = process.env.CLIENT_ID;
 
 // Load in server list if we've saved one before
