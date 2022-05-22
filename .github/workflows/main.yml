@@ -22,13 +22,12 @@ jobs:
       - name: Set environment variables
         run: echo "${{ secrets.DOTENV }}" > .env
       - name: cleanup previous deploy
-        uses: appleboy/ssh-action@master
+        uses: fifsky/ssh-action@master
         with:
           host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
+          user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
+          command: |
             docker compose down
             rm -rf /home/ubuntu/code/nerif
       - name: Deploy
@@ -49,11 +48,10 @@ jobs:
             # An array of folder to exclude
             # EXCLUDE: # optional, default is
       - name: cleanup previous deploy
-        uses: appleboy/ssh-action@master
+        uses: fifsky/ssh-action@master
         with:
           host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
+          user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
+          command: |
             docker compose up --build
