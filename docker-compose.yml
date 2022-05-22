@@ -7,7 +7,7 @@ services:
       - log:/var/log
       - .:/app
       - steam-data:/app/steam_data
-      - /app/node-modules
+      - /app/node_modules
     depends_on:
       - redis
       - db
