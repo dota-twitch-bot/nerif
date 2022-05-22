@@ -1,0 +1,34 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:5000"
+    volumes:
+      - log:/var/log
+      - .:/app
+      - steam-data:/app/steam_data
+      - /app/node-modules
+    depends_on:
+      - redis
+      - db
+  redis:
+    image: redis:7-alpine3.15
+    volumes:
+      - redis-data:/data
+  db:
+    image: postgres:14.3-alpine
+    restart: always
+    shm_size: 256MB
+    environment:
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  log: {}
+  db-data:
+  redis-data:
+  steam-data:
+  node-modules:

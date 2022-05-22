@@ -1,0 +1,4 @@
+node_modules/
+sentry
+servers
+.env
