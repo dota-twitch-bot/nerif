@@ -54,4 +54,5 @@ jobs:
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           command: |
+            cd /home/ubuntu/code/nerif
             docker compose up --build
